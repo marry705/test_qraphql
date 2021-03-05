@@ -1,30 +1,36 @@
 import * as React from 'react';
-import { Input } from '@material-ui/core';
 
+import { InfoData } from '../../constants';
+import { getRequest } from '../../services/apiService';
 import VideoList from './VideoList';
+import InfoAlert from '../InfoAlert';
 
 const Video: React.FC = () => {
-  const urlInput = React.useRef<HTMLInputElement>(null);
+  const [info, setInfo] = React.useState<InfoData>(null);
+  const [videos, setVideos] = React.useState<[]>([]);
 
-  const keyPressHandler = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      if (urlInput.current.value) {
-        console.log(urlInput.current.value);
-      }
-    }
-  };
+  React.useEffect(() => {
+    getRequest('get', 'GET', null)
+      .then((res) => {
+        if (res.length) {
+          setVideos(res);
+        } else {
+          setInfo({ message: '', type: 'success' });
+        }
+      })
+      .catch((error: Error) => {
+        setInfo({ message: error.message, type: 'error' });
+        setTimeout(() => setInfo(null), 5000);
+      });
+  }, []);
 
   return (
     <>
-      <div>
-        <Input
-          onKeyPress={keyPressHandler}
-          inputRef={urlInput}
-          type="text"
-          placeholder="Enter video"
-        />
-      </div>
-      <VideoList />
+      {videos.length
+        ? (
+          <VideoList videosList={videos} />
+        )
+        : <InfoAlert info={info} />}
     </>
   );
 };

@@ -11,7 +11,10 @@ apiRouter.route('/get').get(
 
 apiRouter.route('/upload').post(
   async (req, res, next) => {
-    res.status(200).send('upload');
+    if (req.body) {
+      res.status(200);
+    }
+    res.status(400);
   },
 );
 

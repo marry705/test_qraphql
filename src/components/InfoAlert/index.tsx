@@ -11,7 +11,7 @@ const InfoAlert: React.FC<Props> = ({ info }: Props) => (
     {info
       ? (
         <Alert variant="outlined" severity={info.type}>
-          {info.type}
+          {info.message}
         </Alert>
       )
       : null}

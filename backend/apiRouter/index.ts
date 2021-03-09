@@ -1,4 +1,5 @@
 import express from 'express';
+import { UploadedFile } from 'express-fileupload';
 import ErrorHandler from '../errorHandler/errorHandler';
 
 const apiRouter = express.Router();
@@ -11,10 +12,21 @@ apiRouter.route('/get').get(
 
 apiRouter.route('/upload').post(
   async (req, res, next) => {
-    if (req.body) {
-      res.status(200);
+    if (!req.files) {
+      throw new ErrorHandler(404, 'Not correct email or password');
     }
-    res.status(400);
+    const uploadFile: UploadedFile | UploadedFile[] = req.files.file;
+    const fileName = (<UploadedFile>uploadFile).name;
+    (<UploadedFile>uploadFile).mv(
+      `${__dirname}/public/files/${fileName}`,
+      (error: Error) => {
+        if (error) {
+          console.log(error);
+          next(error);
+        }
+        return res.status(200).send(`public/${fileName}`);
+      },
+    );
   },
 );
 

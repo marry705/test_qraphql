@@ -1,38 +1,39 @@
 import * as React from 'react';
-import { Button, Input } from '@material-ui/core';
+import { Button } from '@material-ui/core';
+import { useMutation } from '@apollo/client';
 
 import { InfoData } from '../../constants';
-import { getRequest } from '../../services/apiService';
 import InfoAlert from '../InfoAlert';
+import { ADD_VID } from '../../constants/query';
 
 const Upload: React.FC = () => {
+  const [UploadFile, { loading, error }] = useMutation(ADD_VID, {
+    onCompleted: (data) => {
+      console.log(data);
+      // setInfo({ message: 'Video saved successfully', type: 'success' });
+      // setTimeout(() => setInfo(null), 5000);
+      // setFileData(null);
+    },
+  });
+
+  const [FileData, setFileData] = React.useState<File>(null);
   const [info, setInfo] = React.useState<InfoData>(null);
-  const [FileData, setFileData] = React.useState<FormData>(null);
-  const [loading, setLoading] = React.useState<boolean>(false);
+
+  React.useEffect(() => {
+    if (error) {
+      setInfo({ message: error.message, type: 'error' });
+      setTimeout(() => setInfo(null), 5000);
+    }
+  }, [error]);
 
   const onChangeHandle = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files[0];
-    const formData = new FormData();
-    formData.append('file', files, files.name);
-    setFileData(formData);
+    const file = e.target.files[0];
+    setFileData(file);
   };
 
   const onClickHandle = () => {
     setInfo(null);
-    setLoading(true);
-    getRequest('upload', 'POST', FileData)
-      .then(() => {
-        setInfo({ message: 'Video saved successfully', type: 'success' });
-        setTimeout(() => setInfo(null), 5000);
-      })
-      .catch((error: Error) => {
-        setInfo({ message: error.message, type: 'error' });
-        setTimeout(() => setInfo(null), 5000);
-      })
-      .finally(() => {
-        setLoading(false);
-        setFileData(null);
-      });
+    UploadFile({ variables: { file: FileData } });
   };
 
   return (

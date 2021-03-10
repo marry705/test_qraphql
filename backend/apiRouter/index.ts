@@ -18,13 +18,12 @@ apiRouter.route('/upload').post(
     const uploadFile: UploadedFile | UploadedFile[] = req.files.file;
     const fileName = (<UploadedFile>uploadFile).name;
     (<UploadedFile>uploadFile).mv(
-      `${__dirname}/public/files/${fileName}`,
+      `${__dirname}/files/${fileName}`,
       (error: Error) => {
         if (error) {
-          console.log(error);
           next(error);
         }
-        return res.status(200).send(`public/${fileName}`);
+        res.status(200);
       },
     );
   },

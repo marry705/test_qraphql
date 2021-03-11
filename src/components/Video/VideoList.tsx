@@ -4,14 +4,14 @@ import { List, ListItem } from '@material-ui/core';
 import VideoRow from './VideoRow';
 
 interface Props {
-  videosList: [],
+  videosList: [string],
 }
 
 const VideoList: React.FC<Props> = ({ videosList }: Props) => (
   <>
     <List>
       {videosList.map((video) => (
-        <ListItem key={video.id}>
+        <ListItem key={video}>
           <VideoRow video={video} />
         </ListItem>
       ))}

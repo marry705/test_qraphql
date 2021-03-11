@@ -7,21 +7,27 @@ import InfoAlert from '../InfoAlert';
 import { GET_VID } from '../../constants/query';
 
 const Video: React.FC = () => {
-  const { data, error } = useQuery(GET_VID);
+  const { error, loading, data } = useQuery(GET_VID);
   const [info, setInfo] = React.useState<InfoData>(null);
 
   React.useEffect(() => {
-    setInfo({ message: error.message, type: 'error' });
-    setTimeout(() => setInfo(null), 5000);
+    if (error) {
+      setInfo({ message: error.message, type: 'error' });
+      setTimeout(() => setInfo(null), 5000);
+    }
   }, [error]);
 
   return (
     <>
-      {data.length
+      {loading
         ? (
-          <VideoList videosList={data} />
+          <h1>Loading</h1>
         )
-        : <InfoAlert info={info} />}
+        : (data.files.length)
+          ? (
+            <VideoList videosList={data.files} />
+          )
+          : <InfoAlert info={info} />}
     </>
   );
 };

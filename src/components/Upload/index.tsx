@@ -9,10 +9,14 @@ import { ADD_VID } from '../../constants/query';
 const Upload: React.FC = () => {
   const [UploadFile, { loading, error }] = useMutation(ADD_VID, {
     onCompleted: (data) => {
-      console.log(data);
-      // setInfo({ message: 'Video saved successfully', type: 'success' });
-      // setTimeout(() => setInfo(null), 5000);
-      // setFileData(null);
+      if (data.uploadFile.success) {
+        setInfo({ message: 'Video saved successfully', type: 'success' });
+        setTimeout(() => setInfo(null), 5000);
+        setFileData(null);
+      } else {
+        setInfo({ message: 'Video didn\'t save', type: 'error' });
+        setTimeout(() => setInfo(null), 5000);
+      }
     },
   });
 

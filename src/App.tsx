@@ -17,6 +17,15 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
+    '& .MuiAlert-outlinedInfo': {
+      width: '50%',
+    },
+    '& .MuiAlert-outlinedError': {
+      width: '50%',
+    },
+    '& .MuiAlert-outlinedSuccess': {
+      width: '50%',
+    },
   },
 }));
 

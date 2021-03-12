@@ -8,5 +8,5 @@ export const FILE_STREAM = 'http://localhost:4000/files';
 
 export type InfoData = {
   message: string,
-  type: 'error' | 'success',
+  type: 'error' | 'success' | 'info',
 };

@@ -22,7 +22,6 @@ const server = new ApolloServer({
         return new Promise((resolve, reject) => {
           readdir(directoryPath, (error, files: string[]) => {
             if (error) {
-              console.log(`Unable to scan directory: ${error}`);
               reject([]);
             }
             resolve(files);

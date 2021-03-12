@@ -10,7 +10,8 @@ const VideoRow: React.FC<Props> = ({ video }: Props) => (
   <>
     <CardMedia
       src={`${FILE_STREAM}/${video}`}
-      component="img"
+      component="video"
+      controls
     />
   </>
 );

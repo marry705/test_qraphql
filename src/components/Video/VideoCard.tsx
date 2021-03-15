@@ -6,7 +6,7 @@ interface Props {
   video: string,
 }
 
-const VideoRow: React.FC<Props> = ({ video }: Props) => (
+const VideoCard: React.FC<Props> = ({ video }: Props) => (
   <>
     <CardMedia
       src={`${FILE_STREAM}/${video}`}
@@ -16,4 +16,4 @@ const VideoRow: React.FC<Props> = ({ video }: Props) => (
   </>
 );
 
-export default VideoRow;
+export default VideoCard;

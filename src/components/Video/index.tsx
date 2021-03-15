@@ -33,12 +33,13 @@ const Video: React.FC = () => {
   const [info, setInfo] = React.useState<InfoData>(null);
 
   React.useEffect(() => {
-    if (!loading && !data.files.length) {
-      setInfo({ message: 'No videos', type: 'info' });
-    }
     if (error) {
       setInfo({ message: error.message, type: 'error' });
       setTimeout(() => setInfo(null), 5000);
+    }
+
+    if (!loading && data && !data.files.length) {
+      setInfo({ message: 'No videos', type: 'info' });
     }
   }, [loading, error, data]);
 
@@ -48,9 +49,9 @@ const Video: React.FC = () => {
         ? (
           <CircularProgress color="secondary" />
         )
-        : (data.files.length)
+        : (data && data.files.length)
           ? (
-            <VideoList videosList={data.files} />
+            <VideoList videos={data.files} />
           )
           : <InfoAlert info={info} />}
     </div>

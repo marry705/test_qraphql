@@ -6,7 +6,7 @@ import { CircularProgress } from '@material-ui/core';
 import { InfoData } from '../../constants';
 import VideoList from './VideoList';
 import InfoAlert from '../InfoAlert';
-import { GET_VID } from '../../constants/query';
+import { GET_VID, VideosDataResponse } from '../../constants/query';
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
   root: {
@@ -18,7 +18,7 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
     alignItems: 'center',
     overflow: 'auto',
     '& .MuiList-padding': {
-      width: '50%',
+      width: '30%',
     },
     '& .MuiListItem-gutters': {
       backgroundColor: theme.palette.background.paper,
@@ -29,7 +29,7 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
 const Video: React.FC = () => {
   const classes = useStyles();
 
-  const { error, loading, data } = useQuery(GET_VID);
+  const { error, loading, data } = useQuery<VideosDataResponse>(GET_VID);
   const [info, setInfo] = React.useState<InfoData>(null);
 
   React.useEffect(() => {

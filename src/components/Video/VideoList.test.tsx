@@ -1,8 +1,6 @@
 import * as React from 'react';
 import '@testing-library/jest-dom/extend-expect';
-import {
-  render, screen, cleanup,
-} from '@testing-library/react';
+import { render, cleanup } from '@testing-library/react';
 import { act } from 'react-dom/test-utils';
 
 import { FILE_STREAM } from '../../constants';

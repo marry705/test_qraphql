@@ -6,10 +6,18 @@ export const GET_VID = gql`
   }
 `;
 
-export const ADD_VID = gql`
+export const ADD_VIDEOS = gql`
   mutation uploadFile($file: Upload!) {
     uploadFile(file: $file) {
       success
     }
   }
 `;
+
+export interface VideosDataResponse {
+  files: string[];
+}
+
+export interface VideosDataUpload {
+  success: boolean;
+}

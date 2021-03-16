@@ -1,12 +1,12 @@
 import * as React from 'react';
-import { useMutation } from '@apollo/client';
+import { ApolloError, useMutation } from '@apollo/client';
 import { Button } from '@material-ui/core';
 
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 
 import { InfoData } from '../../constants';
 import InfoAlert from '../InfoAlert';
-import { ADD_VID } from '../../constants/query';
+import { ADD_VIDEOS, VideosDataUpload } from '../../constants/query';
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
   root: {
@@ -30,37 +30,33 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
 const Upload: React.FC = () => {
   const classes = useStyles();
 
-  const [UploadFile, { loading, error }] = useMutation(ADD_VID, {
-    onCompleted: (data) => {
+  const [uploadFile, { loading }] = useMutation<{ uploadFile: VideosDataUpload }, { file: File }>(ADD_VIDEOS, {
+    onCompleted: (data): void => {
       if (data.uploadFile.success) {
         setInfo({ message: 'Video saved successfully', type: 'success' });
-        setTimeout(() => setInfo(null), 5000);
         setFileData(null);
       } else {
         setInfo({ message: 'Video didn\'t save', type: 'error' });
-        setTimeout(() => setInfo(null), 5000);
       }
+      setTimeout(() => setInfo(null), 5000);
+    },
+    onError: (error: ApolloError): void => {
+      setInfo({ message: error.message, type: 'error' });
+      setTimeout(() => setInfo(null), 5000);
     },
   });
 
   const [FileData, setFileData] = React.useState<File>(null);
   const [info, setInfo] = React.useState<InfoData>(null);
 
-  React.useEffect(() => {
-    if (error) {
-      setInfo({ message: error.message, type: 'error' });
-      setTimeout(() => setInfo(null), 5000);
-    }
-  }, [error]);
-
-  const onChangeHandle = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const onChangeHandle = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const file = e.target.files[0];
     setFileData(file);
   };
 
-  const onClickHandle = () => {
+  const onClickHandle = (): void => {
     setInfo(null);
-    UploadFile({ variables: { file: FileData } });
+    uploadFile({ variables: { file: FileData } });
   };
 
   return (

@@ -7,6 +7,16 @@ import { act } from 'react-dom/test-utils';
 import { InfoData } from '../../constants';
 import InfoAlert from '.';
 
+const renderComponent = (infoTest: InfoData): void => {
+  act(() => {
+    render(
+      <InfoAlert
+        info={infoTest}
+      />,
+    );
+  });
+};
+
 afterEach(() => {
   cleanup();
 });
@@ -16,13 +26,9 @@ test('Checking the initial rendering of the component InfoAlert with success mes
     message: 'Test First',
     type: 'success',
   };
-  act(() => {
-    render(
-      <InfoAlert
-        info={infoTest}
-      />,
-    );
-  });
+
+  renderComponent(infoTest);
+
   let testAlert = await screen.queryByRole('alert');
   expect(testAlert).toBeInTheDocument();
   testAlert = await screen.queryByText(infoTest.message);
@@ -34,13 +40,9 @@ test('Checking the initial rendering of the component InfoAlert with error messa
     message: 'Test First',
     type: 'error',
   };
-  act(() => {
-    render(
-      <InfoAlert
-        info={infoTest}
-      />,
-    );
-  });
+
+  renderComponent(infoTest);
+
   let testAlert = await screen.queryByRole('alert');
   expect(testAlert).toBeInTheDocument();
   testAlert = await screen.queryByText(infoTest.message);
@@ -48,13 +50,8 @@ test('Checking the initial rendering of the component InfoAlert with error messa
 });
 
 test('Checking the initial rendering of the component InfoAlert with no message', async () => {
-  act(() => {
-    render(
-      <InfoAlert
-        info={null}
-      />,
-    );
-  });
+  renderComponent(null);
+
   const testAlert = await screen.queryByRole('alert');
   expect(testAlert).not.toBeInTheDocument();
 });

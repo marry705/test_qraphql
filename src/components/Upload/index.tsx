@@ -1,10 +1,9 @@
 import * as React from 'react';
-import { ApolloError, useMutation } from '@apollo/client';
+import { useMutation } from '@apollo/client';
 import { Button } from '@material-ui/core';
 
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 
-import { InfoData } from '../../constants';
 import InfoAlert from '../InfoAlert';
 import { ADD_VIDEOS, VideosDataUpload } from '../../constants/query';
 
@@ -30,33 +29,14 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
 const Upload: React.FC = () => {
   const classes = useStyles();
 
-  const [uploadFile, { loading }] = useMutation<{ uploadFile: VideosDataUpload }, { file: File }>(ADD_VIDEOS, {
-    onCompleted: (data): void => {
-      if (data.uploadFile.success) {
-        setInfo({ message: 'Video saved successfully', type: 'success' });
-        setFileData(null);
-      } else {
-        setInfo({ message: 'Video didn\'t save', type: 'error' });
-      }
-      setTimeout(() => setInfo(null), 5000);
-    },
-    onError: (error: ApolloError): void => {
-      setInfo({ message: error.message, type: 'error' });
-      setTimeout(() => setInfo(null), 5000);
-    },
-  });
-
-  const [FileData, setFileData] = React.useState<File>(null);
-  const [info, setInfo] = React.useState<InfoData>(null);
-
-  const onChangeHandle = (e: React.ChangeEvent<HTMLInputElement>): void => {
-    const file = e.target.files[0];
-    setFileData(file);
-  };
+  const inputFile = React.useRef<HTMLInputElement>(null);
+  const [uploadFile, { loading, error, data }] = useMutation<{ uploadFile: VideosDataUpload }, { file: File }>(ADD_VIDEOS);
 
   const onClickHandle = (): void => {
-    setInfo(null);
-    uploadFile({ variables: { file: FileData } });
+    if (inputFile.current.files[0]) {
+      uploadFile({ variables: { file: inputFile.current.files[0] } });
+      inputFile.current.value = '';
+    }
   };
 
   return (
@@ -66,7 +46,7 @@ const Upload: React.FC = () => {
         onSubmit={(e) => { e.preventDefault(); }}
       >
         <input
-          onChange={onChangeHandle}
+          ref={inputFile}
           type="file"
           accept="video/mp4, video/x-m4v, video/*"
           disabled={loading}
@@ -75,12 +55,20 @@ const Upload: React.FC = () => {
           variant="contained"
           color="secondary"
           onClick={onClickHandle}
-          disabled={loading || !FileData}
+          disabled={loading}
         >
           Upload
         </Button>
       </form>
-      <InfoAlert info={info} />
+      {(error)
+        ? (
+          <InfoAlert info={{ message: error.message, type: 'error' }} />
+        )
+        : (data?.uploadFile?.success)
+          ? (
+            <InfoAlert info={{ message: 'Video saved successfully', type: 'success' }} />
+          )
+          : null}
     </div>
   );
 };

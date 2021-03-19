@@ -7,13 +7,11 @@ interface Props {
 }
 
 const VideoCard: React.FC<Props> = ({ video }: Props) => (
-  <>
-    <CardMedia
-      src={`${FILE_STREAM}/${video}`}
-      component="video"
-      controls
-    />
-  </>
+  <CardMedia
+    src={`${FILE_STREAM}/${video}`}
+    component="video"
+    controls
+  />
 );
 
 export default VideoCard;

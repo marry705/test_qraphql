@@ -10,11 +10,8 @@ import wait from 'waait';
 import { ADD_VIDEOS } from '../../constants/query';
 import Upload from '.';
 
-beforeEach(() => {
-  jest.clearAllMocks();
-});
-
 afterEach(() => {
+  jest.clearAllMocks();
   cleanup();
 });
 

@@ -3,7 +3,10 @@ import path from 'path';
 import cors from 'cors';
 import bodyParser from 'body-parser';
 
+import server from './server';
+
 const app = express();
+
 app.use(bodyParser.json());
 const corsOptions = {
   origin: ['http://localhost:4000'],
@@ -16,5 +19,6 @@ app.use('/files', express.static(path.join(__dirname, '../files')));
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../dist/', 'index.html'));
 });
+server.applyMiddleware({ app, path: '/graphql' });
 
 export default app;

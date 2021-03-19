@@ -20,10 +20,7 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
     '& .MuiAlert-outlinedInfo': {
       width: '50%',
     },
-    '& .MuiAlert-outlinedError': {
-      width: '50%',
-    },
-    '& .MuiAlert-outlinedSuccess': {
+    '& .MuiSnackbar-anchorOriginBottomCenter': {
       width: '50%',
     },
   },

@@ -3,7 +3,6 @@ import { useQuery } from '@apollo/client';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { CircularProgress } from '@material-ui/core';
 
-import { InfoData } from '../../constants';
 import VideoList from './VideoList';
 import InfoAlert from '../InfoAlert';
 import { GET_VID, VideosDataResponse } from '../../constants/query';
@@ -30,30 +29,30 @@ const Video: React.FC = () => {
   const classes = useStyles();
 
   const { error, loading, data } = useQuery<VideosDataResponse>(GET_VID);
-  const [info, setInfo] = React.useState<InfoData>(null);
 
-  React.useEffect(() => {
-    if (error) {
-      setInfo({ message: error.message, type: 'error' });
-      setTimeout(() => setInfo(null), 5000);
-    }
+  if (loading) {
+    return (
+      <div className={classes.root}>
+        <CircularProgress color="secondary" />
+      </div>
+    );
+  }
 
-    if (!loading && data && !data.files.length) {
-      setInfo({ message: 'No videos', type: 'info' });
-    }
-  }, [loading, error, data]);
+  if (error) {
+    return (
+      <div className={classes.root}>
+        <InfoAlert info={{ message: error.message, type: 'error' }} />
+      </div>
+    );
+  }
 
   return (
     <div className={classes.root}>
-      {loading
+      {(data?.files?.length)
         ? (
-          <CircularProgress color="secondary" />
+          <VideoList videos={data.files} />
         )
-        : (data && data.files.length)
-          ? (
-            <VideoList videos={data.files} />
-          )
-          : <InfoAlert info={info} />}
+        : <InfoAlert info={{ message: 'No videos', type: 'info' }} />}
     </div>
   );
 };

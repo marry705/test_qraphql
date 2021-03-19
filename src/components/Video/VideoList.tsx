@@ -8,15 +8,13 @@ interface Props {
 }
 
 const VideoList: React.FC<Props> = ({ videos }: Props) => (
-  <>
-    <List>
-      {videos.map((video) => (
-        <ListItem key={video}>
-          <VideoCard video={video} />
-        </ListItem>
-      ))}
-    </List>
-  </>
+  <List>
+    {videos.map((video) => (
+      <ListItem key={video}>
+        <VideoCard video={video} />
+      </ListItem>
+    ))}
+  </List>
 );
 
 export default VideoList;

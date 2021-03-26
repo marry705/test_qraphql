@@ -1,11 +1,11 @@
 import * as React from 'react';
 import '@testing-library/jest-dom/extend-expect';
 import {
-  render, screen, cleanup,
+  render, screen, cleanup, waitFor,
 } from '@testing-library/react';
 import { MockedProvider } from '@apollo/client/testing';
 import { act } from 'react-dom/test-utils';
-import wait from 'waait';
+import { GraphQLError } from 'graphql';
 
 import { GET_VID } from '../../constants/query';
 import Video from '.';
@@ -15,7 +15,7 @@ afterEach(() => {
   cleanup();
 });
 
-test('Checking the initial rendering of the component Video without error', async () => {
+test('Checking the initial rendering of the component Video with data', async () => {
   const files: string[] = [
     'Pexels_Videos1722694.mp4',
     'Pexels_Videos1722689.mp4',
@@ -43,18 +43,35 @@ test('Checking the initial rendering of the component Video without error', asyn
   const loadingSvg = await document.querySelector('circle');
   expect(loadingSvg).toBeInTheDocument();
 
-  await act(async () => {
-    wait(0);
+  await waitFor(() => {
+    expect(document.querySelector('ul')).toBeInTheDocument();
+    expect(document.querySelectorAll('li').length).toBe(files.length);
   });
-
-  const videosContainer = await document.querySelector('ul');
-  expect(videosContainer).toBeInTheDocument();
-
-  const videos = await document.querySelectorAll('li');
-  expect(videos.length).toBe(files.length);
 });
 
-test('Checking the initial rendering of the component Video without data', async () => {
+test('Checking the rendering of the component Video with error', async () => {
+  const mocks = {
+    request: {
+      query: GET_VID,
+    },
+    result: {
+      errors: [new GraphQLError('New Error!')],
+    },
+  };
+
+  await act(async () => {
+    render(
+      <MockedProvider mocks={[mocks]} addTypename={false}>
+        <Video />
+      </MockedProvider>,
+    );
+  });
+
+  const alert = await screen.getByText('New Error!');
+  expect(alert).toBeInTheDocument();
+});
+
+test('Checking the rendering of the component Video without data', async () => {
   const files: string[] = [];
   const mocks = {
     request: {
@@ -79,7 +96,7 @@ test('Checking the initial rendering of the component Video without data', async
   expect(alert).toBeInTheDocument();
 });
 
-test('Checking the initial rendering of the component Video with error', async () => {
+test('Checking the rendering of the component Video with network error', async () => {
   const mocks = {
     request: {
       query: GET_VID,

@@ -1,11 +1,11 @@
 import * as React from 'react';
-import { useMutation } from '@apollo/client';
-import { Button } from '@material-ui/core';
+import { useMutation, ApolloError } from '@apollo/client';
 
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 
 import InfoAlert from '../InfoAlert';
 import { ADD_VIDEOS, VideosDataUpload } from '../../constants/query';
+import { InfoData } from '../../constants';
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
   root: {
@@ -30,11 +30,21 @@ const Upload: React.FC = () => {
   const classes = useStyles();
 
   const inputFile = React.useRef<HTMLInputElement>(null);
-  const [uploadFile, { loading, error, data }] = useMutation<{ uploadFile: VideosDataUpload }, { file: File }>(ADD_VIDEOS);
+  const [infoData, setInfoData] = React.useState<InfoData>(null);
 
-  const onClickHandle = (): void => {
-    if (inputFile.current.files[0]) {
-      uploadFile({ variables: { file: inputFile.current.files[0] } });
+  const [uploadFile, { loading }] = useMutation<{ uploadFile: VideosDataUpload }, { file: File }>(ADD_VIDEOS, {
+    onCompleted: (): void => {
+      setInfoData({ message: 'Video saved successfully', type: 'success' });
+    },
+    onError: (error: ApolloError): void => {
+      setInfoData({ message: error.message, type: 'error' });
+    },
+  });
+
+  const onChangeHandle = ({ target: { validity, files } }: React.ChangeEvent<HTMLInputElement>): void => {
+    setInfoData(null);
+    if (validity.valid) {
+      uploadFile({ variables: { file: files[0] } });
       inputFile.current.value = '';
     }
   };
@@ -47,28 +57,13 @@ const Upload: React.FC = () => {
       >
         <input
           ref={inputFile}
+          onChange={onChangeHandle}
           type="file"
           accept="video/mp4, video/x-m4v, video/*"
           disabled={loading}
         />
-        <Button
-          variant="contained"
-          color="secondary"
-          onClick={onClickHandle}
-          disabled={loading}
-        >
-          Upload
-        </Button>
       </form>
-      {(error)
-        ? (
-          <InfoAlert info={{ message: error.message, type: 'error' }} />
-        )
-        : (data?.uploadFile?.success)
-          ? (
-            <InfoAlert info={{ message: 'Video saved successfully', type: 'success' }} />
-          )
-          : null}
+      <InfoAlert info={infoData} />
     </div>
   );
 };

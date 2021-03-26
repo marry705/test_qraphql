@@ -5,7 +5,7 @@ import { GRAPHQL_ENDPOINT } from './constants';
 const defaultOptions: DefaultOptions = {
   watchQuery: {
     fetchPolicy: 'no-cache',
-    errorPolicy: 'ignore',
+    errorPolicy: 'none',
   },
 };
 

@@ -1,7 +1,11 @@
 import { gql, IResolvers } from 'apollo-server-express';
 import path from 'path';
-import { createWriteStream, readdir } from 'fs';
+import {
+  createWriteStream, readdir, existsSync, mkdirSync,
+} from 'fs';
 import { DocumentNode } from '@apollo/client';
+
+const directoryPath = path.join(__dirname, '../files/');
 
 export const typeDefs: DocumentNode = gql`
      type DownloadResult {
@@ -17,24 +21,24 @@ export const typeDefs: DocumentNode = gql`
 
 export const resolvers: IResolvers = {
   Query: {
-    files: async (): Promise<string[] | Error> => {
-      const directoryPath = path.join(__dirname, '../files/');
-      return new Promise((resolve, reject) => {
-        readdir(directoryPath, (error, files: string[]) => {
-          if (error) {
-            reject(new Error(error.message));
-          }
-          resolve(files);
-        });
+    files: async (): Promise<string[] | Error> => new Promise((resolve, reject) => {
+      readdir(directoryPath, (error, files: string[]) => {
+        if (error) {
+          reject(new Error(error.message));
+        }
+        resolve(files);
       });
-    },
+    }),
   },
   Mutation: {
     uploadFile: async (parent, { file }): Promise<{ 'success': boolean } | Error> => {
       const {
         createReadStream, filename,
       } = await file;
-      const pathName = path.join(__dirname, `../files/${filename}`);
+      if (!existsSync(directoryPath)) {
+        mkdirSync(directoryPath);
+      }
+      const pathName = path.join(directoryPath, `${filename}`);
       const readStream = createWriteStream(pathName);
       return new Promise((resolve, reject) => {
         createReadStream()

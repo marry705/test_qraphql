@@ -1,11 +1,11 @@
 import * as React from 'react';
 import '@testing-library/jest-dom/extend-expect';
 import {
-  render, screen, cleanup, fireEvent,
+  render, screen, cleanup, fireEvent, waitFor,
 } from '@testing-library/react';
 import { MockedProvider } from '@apollo/client/testing';
 import { act } from 'react-dom/test-utils';
-import wait from 'waait';
+import { GraphQLError } from 'graphql';
 
 import { ADD_VIDEOS } from '../../constants/query';
 import Upload from '.';
@@ -15,13 +15,11 @@ afterEach(() => {
   cleanup();
 });
 
-const fileData: File = new File([''], 'Pexels_Videos1722694.mp4', { type: 'video/mp4' });
-
 test('Checking the initial rendering of the component Upload', async () => {
   const mocks = {
     request: {
       query: ADD_VIDEOS,
-      variables: { file: fileData },
+      variables: { file: {} },
     },
     result: {
       data: {
@@ -41,19 +39,19 @@ test('Checking the initial rendering of the component Upload', async () => {
 
   const inputNode = await document.querySelector('input');
   expect(inputNode).toBeInTheDocument();
-  const button = await screen.getByRole('button', { name: 'Upload' });
-  expect(button).toBeInTheDocument();
 });
 
-test('Checking the button and file input in the component Upload', async () => {
-  let createMutationCalled = false;
+test('Checking the file input in the component Upload', async () => {
+  let createMutationCalled = 0;
+  const fileData: File = new File(['Pexels_Videos1722694'], 'Pexels_Videos1722694.mp4', { type: 'video/mp4' });
+
   const mocks = {
     request: {
       query: ADD_VIDEOS,
       variables: { file: fileData },
     },
     result: () => {
-      createMutationCalled = true;
+      createMutationCalled += 1;
       return {
         data: {
           uploadFile: {
@@ -72,34 +70,31 @@ test('Checking the button and file input in the component Upload', async () => {
     );
   });
 
-  const inputNode = await document.querySelector('input');
-  const button = await screen.getByRole('button', { name: 'Upload' });
-
+  const inputNode = document.querySelector('input');
   fireEvent.change(inputNode, { target: { files: [fileData] } });
-  expect(button).not.toBeDisabled();
-  fireEvent.click(button);
 
-  await act(async () => {
-    wait(0);
+  await waitFor(() => {
+    expect(createMutationCalled).toBe(1);
+    expect(screen.getByText('Video saved successfully')).toBeInTheDocument();
   });
-
-  expect(button).toBeDisabled();
-  expect(createMutationCalled).toBe(true);
 });
 
-test('Checking the upload function with success in the component Upload', async () => {
+test('Checking the upload function with error in the component Upload', async () => {
+  let createMutationCalled = 0;
+  const errorMessage = 'Server Error!';
+  const fileData: File = new File(['Pexels_Videos1722694'], 'Pexels_Videos1722694.mp4', { type: 'video/mp4' });
+
   const mocks = {
     request: {
       query: ADD_VIDEOS,
       variables: { file: fileData },
     },
-    result: () => ({
-      data: {
-        uploadFile: {
-          success: true,
-        },
-      },
-    }),
+    result: () => {
+      createMutationCalled += 1;
+      return {
+        errors: [new GraphQLError(errorMessage)],
+      };
+    },
   };
 
   await act(async () => {
@@ -110,33 +105,25 @@ test('Checking the upload function with success in the component Upload', async 
     );
   });
 
-  const inputNode = await document.querySelector('input');
-  const button = await screen.getByRole('button', { name: 'Upload' });
-
+  const inputNode = document.querySelector('input');
   fireEvent.change(inputNode, { target: { files: [fileData] } });
-  fireEvent.click(button);
 
-  await act(async () => {
-    wait(0);
+  await waitFor(() => {
+    expect(createMutationCalled).toBe(1);
+    expect(screen.getByText(errorMessage)).toBeInTheDocument();
   });
-
-  const alert = await screen.getByText('Video saved successfully');
-  expect(alert).toBeInTheDocument();
 });
 
-test('Checking the upload function with no success in the component Upload', async () => {
+test('Checking the rendering of the component Upload with network error', async () => {
+  const fileData: File = new File(['Pexels_Videos1722694'], 'Pexels_Videos1722694.mp4', { type: 'video/mp4' });
+  const errorMessage = 'Network Error!';
+
   const mocks = {
     request: {
       query: ADD_VIDEOS,
       variables: { file: fileData },
     },
-    result: () => ({
-      data: {
-        uploadFile: {
-          success: false,
-        },
-      },
-    }),
+    error: new Error(errorMessage),
   };
 
   await act(async () => {
@@ -147,84 +134,10 @@ test('Checking the upload function with no success in the component Upload', asy
     );
   });
 
-  const inputNode = await document.querySelector('input');
-  const button = await screen.getByRole('button', { name: 'Upload' });
-
+  const inputNode = document.querySelector('input');
   fireEvent.change(inputNode, { target: { files: [fileData] } });
-  fireEvent.click(button);
 
-  await act(async () => {
-    wait(0);
+  await waitFor(() => {
+    expect(screen.getByText(errorMessage)).toBeInTheDocument();
   });
-
-  const alert = await screen.getByText('Video didn\'t save');
-  expect(alert).toBeInTheDocument();
-});
-
-test('Checking the upload function with success in the component Upload', async () => {
-  const mocks = {
-    request: {
-      query: ADD_VIDEOS,
-      variables: { file: fileData },
-    },
-    result: () => ({
-      data: {
-        uploadFile: {
-          success: true,
-        },
-      },
-    }),
-  };
-
-  await act(async () => {
-    render(
-      <MockedProvider mocks={[mocks]} addTypename={false}>
-        <Upload />
-      </MockedProvider>,
-    );
-  });
-
-  const inputNode = await document.querySelector('input');
-  const button = await screen.getByRole('button', { name: 'Upload' });
-
-  fireEvent.change(inputNode, { target: { files: [fileData] } });
-  fireEvent.click(button);
-
-  await act(async () => {
-    wait(0);
-  });
-
-  const alert = await screen.getByText('Video saved successfully');
-  expect(alert).toBeInTheDocument();
-});
-
-test('Checking the upload function with no success in the component Upload', async () => {
-  const mocks = {
-    request: {
-      query: ADD_VIDEOS,
-      variables: { file: fileData },
-    },
-    error: new Error('An error occurred'),
-  };
-
-  await act(async () => {
-    render(
-      <MockedProvider mocks={[mocks]} addTypename={false}>
-        <Upload />
-      </MockedProvider>,
-    );
-  });
-
-  const inputNode = await document.querySelector('input');
-  const button = await screen.getByRole('button', { name: 'Upload' });
-
-  fireEvent.change(inputNode, { target: { files: [fileData] } });
-  fireEvent.click(button);
-
-  await act(async () => {
-    wait(0);
-  });
-
-  const alert = await screen.getByText('An error occurred');
-  expect(alert).toBeInTheDocument();
 });

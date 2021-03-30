@@ -1,5 +1,6 @@
 import { ApolloServer } from 'apollo-server-express';
 import { GraphQLError } from 'graphql';
+
 import { typeDefs, resolvers } from './schema';
 
 const server = new ApolloServer({

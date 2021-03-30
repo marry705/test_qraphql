@@ -4,6 +4,10 @@ import cors from 'cors';
 import bodyParser from 'body-parser';
 
 import server from './server';
+import dpp from './initDirectoryPath';
+
+const directoryPath = path.join(__dirname, '../files/');
+dpp.setPath(directoryPath);
 
 const app = express();
 
@@ -12,13 +16,13 @@ const corsOptions = {
   origin: ['http://localhost:4000'],
   credentials: true,
 };
-
 app.use(cors(corsOptions));
 app.use(express.static(path.join(__dirname, '../dist/')));
 app.use('/files', express.static(path.join(__dirname, '../files')));
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../dist/', 'index.html'));
 });
+
 server.applyMiddleware({ app, path: '/graphql' });
 
 export default app;

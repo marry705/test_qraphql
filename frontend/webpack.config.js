@@ -2,11 +2,13 @@
 const path = require('path');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 
 module.exports = {
-  entry: './src/index.tsx',
   mode: 'development',
+  entry: {
+    app: path.join(__dirname, 'src', 'index.tsx'),
+  },
+  target: 'web',
   module: {
     rules: [
       {
@@ -29,10 +31,6 @@ module.exports = {
           },
         }],
       },
-      {
-        test: /\.(png|svg|jpg|gif)$/,
-        use: ['file-loader'],
-      },
     ],
   },
   resolve: { extensions: ['.tsx', '.ts', '.jsx', '.js'] },
@@ -43,17 +41,11 @@ module.exports = {
   devServer: {
     historyApiFallback: true,
     contentBase: path.join(__dirname, 'dist/'),
+    compress: true,
+    hot: true,
     port: 3000,
-    hotOnly: true,
   },
   plugins: [
-    new BundleAnalyzerPlugin(
-      {
-        analyzerMode: 'disabled',
-        generateStatsFile: true,
-        statsOptions: { source: false },
-      },
-    ),
     new webpack.HotModuleReplacementPlugin(),
     new HtmlWebpackPlugin({
       title: 'Simplified YouTube',

@@ -5,7 +5,7 @@ import {
 } from 'fs';
 import { promisify } from 'util';
 import { DocumentNode } from '@apollo/client';
-import dpp from './initDirectoryPath';
+import dpp from './dir/initDirectoryPath';
 
 export const typeDefs: DocumentNode = gql`
      type DownloadResult {

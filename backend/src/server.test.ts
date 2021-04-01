@@ -6,11 +6,11 @@ import {
 
 import server from './server';
 import { GET_VID, ADD_VIDEOS } from '../src/constants/query';
-import dpp from './initDirectoryPath';
+import dpp from './dir/initDirectoryPath';
 
-const testPath = path.join(__dirname, '../backend/tests/testFiles/');
-const errorTestPath = path.join(__dirname, '../backend/tests/errorFiles/');
-const testFilePath = path.join(__dirname, '../backend/tests/testFilePath/');
+const testPath = path.join(__dirname, '../src/testFiles/');
+const errorTestPath = path.join(__dirname, '../src/errorFiles/');
+const testFilePath = path.join(__dirname, '../src/testFilePath/');
 
 const removeDir = (folderPath: string): void => {
   if (existsSync(folderPath)) {

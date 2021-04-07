@@ -1,20 +1,23 @@
 import express from 'express';
 import path from 'path';
-import cors from 'cors';
-import bodyParser from 'body-parser';
+import { graphqlUploadExpress } from 'graphql-upload';
+import { mkdirSync, existsSync } from 'fs';
 
 import server from './server';
 import dpp from './dir/initDirectoryPath';
 
 const directoryPath = path.join(__dirname, '../files/');
+const maxFileSize = 1024*1024*128*128;
+const maxFiles = 10;
 dpp.setPath(directoryPath);
 
-const app = express();
+if (!existsSync(dpp.getPath())) {
+    mkdirSync(dpp.getPath());
+}
 
-app.use(bodyParser.json());
-app.use(cors());
-app.use('/files', express.static(path.join(__dirname, '../files')));
+const app = express().use(graphqlUploadExpress({ maxFileSize, maxFiles }));
+app.use('/files', express.static(directoryPath));
 
-server.applyMiddleware({ app, path: '/api' });
+server.applyMiddleware({ app, path: process.env.API || '/api' });
 
 export default app;

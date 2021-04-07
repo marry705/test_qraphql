@@ -1,8 +1,11 @@
 import { gql } from '@apollo/client';
 
 export const GET_VID = gql`
-  query files {
-    files
+  query getFiles {
+    files {
+      filename
+      id
+    }
   }
 `;
 
@@ -15,7 +18,12 @@ export const ADD_VIDEOS = gql`
 `;
 
 export interface VideosDataResponse {
-  files: string[];
+  files: FileType[];
+}
+
+export interface FileType {
+  filename: string;
+  id: string;
 }
 
 export interface VideosDataUpload {

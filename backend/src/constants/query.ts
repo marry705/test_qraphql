@@ -1,8 +1,11 @@
 import { gql } from '@apollo/client';
 
 export const GET_VID = gql`
-  query files {
-    files
+  query getFiles {
+    files {
+      filename
+      id
+    }
   }
 `;
 

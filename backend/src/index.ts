@@ -1,3 +1,3 @@
 import app from './app';
 
-app.listen({ port: 4000 }, () => console.log('🚀 Server ready'));
+app.listen({ port: process.env.PORT || 5000 }, () => console.log('🚀 Server ready'));

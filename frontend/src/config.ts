@@ -10,6 +10,7 @@ const defaultOptions: DefaultOptions = {
 };
 
 export const config = new ApolloClient({
+  ssrMode: typeof window === 'undefined',
   cache: new InMemoryCache(),
   link: createUploadLink({
     uri: GRAPHQL_ENDPOINT,

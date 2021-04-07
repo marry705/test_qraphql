@@ -3,13 +3,14 @@ import path from 'path';
 import {
   existsSync, mkdirSync, rmdirSync, readdirSync, statSync, unlinkSync, createReadStream,
 } from 'fs';
+import lowdb from 'lowdb';
+import FileSync from 'lowdb/adapters/FileSync';
 
 import server from './server';
 import { GET_VID, ADD_VIDEOS } from '../src/constants/query';
 import dpp from './dir/initDirectoryPath';
 
 const testPath = path.join(__dirname, '../src/testFiles/');
-const errorTestPath = path.join(__dirname, '../src/errorFiles/');
 const testFilePath = path.join(__dirname, '../src/testFilePath/');
 
 const removeDir = (folderPath: string): void => {
@@ -45,15 +46,8 @@ test('Test Queries without error', async () => {
   const { query: tQuery } = createTestClient(server);
   const res = await tQuery({ query: GET_VID });
   expect(res?.errors).toBeUndefined();
-  expect(res?.data).toEqual({ files: [] });
-});
-
-test('Test Queries with error', async () => {
-  dpp.setPath(errorTestPath);
-  const { query: tQuery } = createTestClient(server);
-  const res = await tQuery({ query: GET_VID });
-  expect(res?.data).toBeNull();
-  expect(res?.errors).toEqual([{ message: 'Internal server error' }]);
+  console.log(res?.data?.files);
+  expect(res?.data?.files?.filename).toEqual("pexels-nadezhda-moryak-6340529.mp4");
 });
 
 test('Test Mutation with data', async () => {

@@ -7,7 +7,7 @@ import { MockedProvider } from '@apollo/client/testing';
 import { act } from 'react-dom/test-utils';
 import { GraphQLError } from 'graphql';
 
-import { GET_VID } from '../../constants/query';
+import { GET_VID, FileType } from '../../constants/query';
 import Video from '.';
 
 afterEach(() => {
@@ -16,10 +16,10 @@ afterEach(() => {
 });
 
 test('Checking the initial rendering of the component Video with data', async () => {
-  const files: string[] = [
-    'Pexels_Videos1722694.mp4',
-    'Pexels_Videos1722689.mp4',
-    'Pexels_Videos3732694.mp4',
+  const files: FileType[] = [
+    { filename: 'Pexels_Videos1722689.mp4', id: '786345786734' },
+    { filename: 'Pexels_Videos1722689.mp4', id: '786345786736' },
+    { filename: 'Pexels_Videos1722689.mp4', id: '786345786834' },
   ];
   const mocks = {
     request: {
@@ -72,7 +72,7 @@ test('Checking the rendering of the component Video with error', async () => {
 });
 
 test('Checking the rendering of the component Video without data', async () => {
-  const files: string[] = [];
+  const files: FileType[] = [];
   const mocks = {
     request: {
       query: GET_VID,

@@ -5,7 +5,7 @@ import {
   GraphQLString,
   GraphQLID,
 } from 'graphql';
-  
+
 export const FileType = new GraphQLObjectType({
   name: 'File',
   description: 'A stored file.',

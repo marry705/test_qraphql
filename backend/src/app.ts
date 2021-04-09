@@ -5,11 +5,13 @@ import { mkdirSync, existsSync } from 'fs';
 
 import server from './server';
 import dpp from './dir/initDirectoryPath';
+import db from './db/initDB';
 
 const directoryPath = path.join(__dirname, '../files/');
 const maxFileSize = 1024*1024*128*128;
 const maxFiles = 10;
 dpp.setPath(directoryPath);
+db.createDB('db');
 
 if (!existsSync(dpp.getPath())) {
     mkdirSync(dpp.getPath());

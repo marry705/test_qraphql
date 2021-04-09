@@ -7,7 +7,7 @@ const QueryType = new GraphQLObjectType({
     files: {
       description: 'All stored files.',
       type:  GraphQLNonNull(GraphQLList(FileType)),
-      resolve: (source, args, { db }) => db.get('uploads').value(),
+      resolve: (source, args, { db }) => db.getField(),
     },
   }),
 });

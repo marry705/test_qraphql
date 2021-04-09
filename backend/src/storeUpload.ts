@@ -1,6 +1,6 @@
-import { createWriteStream } from 'fs';
+import { unlink, createWriteStream } from 'fs';
 import shortid from 'shortid';
-import db from './db';
+import db from './db/initDB';
 import dpp from './dir/initDirectoryPath';
 
 const storeUpload = async (upload): Promise<{ 'success': boolean }> => {
@@ -13,12 +13,13 @@ const storeUpload = async (upload): Promise<{ 'success': boolean }> => {
   await new Promise((resolve, reject) => {
     const writeStream = createWriteStream(path);
     writeStream.on('finish', resolve);
-    writeStream.on('error', (error) => reject(error));
-    stream.on('error', (error) => writeStream.destroy(error));
+    writeStream.on('error', (error: Error) => unlink(path, () => reject(error)));
+
+    stream.on('error', (error: Error) => writeStream.destroy(error));
     stream.pipe(writeStream);
   });
   
-  db.get('uploads').push(file).write();
+  db.addField(file);
   
   return { 'success': true };
 }

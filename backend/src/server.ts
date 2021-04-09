@@ -2,7 +2,7 @@ import { ApolloServer } from 'apollo-server-express';
 import { GraphQLError } from 'graphql';
 
 import schema from './schema';
-import db from './db';
+import db from './db/initDB';
 import storeUpload from './storeUpload';
 
 

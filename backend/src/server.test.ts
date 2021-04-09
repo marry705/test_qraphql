@@ -3,12 +3,11 @@ import path from 'path';
 import {
   existsSync, mkdirSync, rmdirSync, readdirSync, statSync, unlinkSync, createReadStream,
 } from 'fs';
-import lowdb from 'lowdb';
-import FileSync from 'lowdb/adapters/FileSync';
 
 import server from './server';
 import { GET_VID, ADD_VIDEOS } from '../src/constants/query';
 import dpp from './dir/initDirectoryPath';
+import db from './db/initDB';
 
 const testPath = path.join(__dirname, '../src/testFiles/');
 const testFilePath = path.join(__dirname, '../src/testFilePath/');
@@ -31,14 +30,16 @@ const removeDir = (folderPath: string): void => {
 };
 
 beforeEach(() => {
-  if (!existsSync(testPath)) {
-    mkdirSync(testPath);
-  }
+  db.createDB('db_ex');
   dpp.setPath(testPath);
+  if (!existsSync(dpp.getPath())) {
+    mkdirSync(dpp.getPath());
+  }
 });
 
 afterEach(() => {
-  removeDir(testPath);
+  removeDir(dpp.getPath());
+  db.removeDB('db_ex');
   jest.clearAllMocks();
 });
 
@@ -46,8 +47,7 @@ test('Test Queries without error', async () => {
   const { query: tQuery } = createTestClient(server);
   const res = await tQuery({ query: GET_VID });
   expect(res?.errors).toBeUndefined();
-  console.log(res?.data?.files);
-  expect(res?.data?.files?.filename).toEqual("pexels-nadezhda-moryak-6340529.mp4");
+  expect(res?.data?.files).toEqual([]);
 });
 
 test('Test Mutation with data', async () => {
@@ -61,12 +61,13 @@ test('Test Mutation with data', async () => {
         stream: file,
         filename: 'test.mp4',
         mimetype: 'video/mp4',
+        size: 1024*1024,
       })),
     },
   });
   expect(res?.errors).toBeUndefined();
   expect(res?.data).toEqual({ uploadFile: { success: true } });
-  expect(readdirSync(testPath).length).toEqual(1);
+  expect(db.getField().length).toEqual(1);
 });
 
 test('Test Mutation without variables', async () => {

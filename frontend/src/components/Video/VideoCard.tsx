@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { CardMedia } from '@material-ui/core';
-import { FILE_STREAM } from '../../constants';
 
 interface Props {
   video: string,
@@ -8,7 +7,7 @@ interface Props {
 
 const VideoCard: React.FC<Props> = ({ video }: Props) => (
   <CardMedia
-    src={`${FILE_STREAM}/${video}`}
+    src={`${process.env.FILE_STREAM}/${video}`}
     component="video"
     controls
   />

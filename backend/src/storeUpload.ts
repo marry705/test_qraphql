@@ -3,7 +3,7 @@ import shortid from 'shortid';
 import db from './db/initDB';
 import dpp from './dir/initDirectoryPath';
 
-const storeUpload = async (upload): Promise<{ 'success': boolean }> => {
+const storeUpload = async (upload: { filename: string, createReadStream }): Promise<{ 'success': boolean }> => {
   const { createReadStream, filename } = await upload;
   const stream = createReadStream();
   const path = `${dpp.getPath()}${filename}`;

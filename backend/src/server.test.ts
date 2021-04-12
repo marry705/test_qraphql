@@ -3,6 +3,7 @@ import path from 'path';
 import {
   existsSync, mkdirSync, rmdirSync, readdirSync, statSync, unlinkSync, createReadStream,
 } from 'fs';
+import { Upload } from 'graphql-upload';
 
 import server from './server';
 import { GET_VID, ADD_VIDEOS } from '../src/constants/query';
@@ -53,17 +54,16 @@ test('Test Queries without error', async () => {
 test('Test Mutation with data', async () => {
   const { mutate: tMutation } = createTestClient(server);
   const file = createReadStream(path.join(testFilePath, 'test.mp4'));
+  const fileP = new Upload();
+  fileP.promise = Promise.resolve({
+    createReadStream: () => file,
+    stream: file,
+    filename: 'test.mp4',
+    mimetype: `video/mpeg4`,
+  });
   const res = await tMutation({
     mutation: ADD_VIDEOS,
-    variables: {
-      file: new Promise((resolve) => resolve({
-        createReadStream: () => file,
-        stream: file,
-        filename: 'test.mp4',
-        mimetype: 'video/mp4',
-        size: 1024*1024,
-      })),
-    },
+    variables: { file: fileP },
   });
   expect(res?.errors).toBeUndefined();
   expect(res?.data).toEqual({ uploadFile: { success: true } });
